@@ -45,7 +45,7 @@ if uploaded_file is not None and interpreter is not None:
         img_array = np.array(img_resized, dtype=np.float32)
 
         # preprocessing
-        img_array = tf.keras.applications.convnext.preprocess_input(img_array)
+        img_array = np.array(img_resized, dtype=np.float32) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
 
         #Prediction
@@ -55,9 +55,13 @@ if uploaded_file is not None and interpreter is not None:
         raw_predictions = interpreter.get_tensor(output_details[0]['index'])
         
         probabilities = softmax(raw_predictions[0])
-        
         result_index = np.argmax(probabilities)
         confidence = probabilities[result_index] * 100
+        
+        st.write(f"Debug - All Probabilities: {probabilities}")
+        
+        st.success(f"### Landmark: **{class_names[result_index]}**")
+        st.write(f"**Confidence Level:** {confidence:.2f}%")
 
     #result
     if confidence > 50: 
